@@ -1,25 +1,12 @@
-"use client";
-
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/session";
 import { courses } from "../data/courses";
+import LogoutButton from "../components/LogoutButton";
 
-const STORAGE_KEY = "lms-student-name";
-
-// Dashboard only shows after the student logs in.
-export default function DashboardPage() {
-  const router = useRouter();
-  const [studentName] = useState<string | null>(() => {
-    if (typeof window === "undefined") return null;
-    return localStorage.getItem(STORAGE_KEY);
-  });
-
-  useEffect(() => {
-    if (!studentName) {
-      router.replace("/");
-    }
-  }, [router, studentName]);
+export default async function DashboardPage() {
+  const user = await getCurrentUser();
+  if (!user) redirect("/"); // ← без сесії — назад на логін
 
   const newsItems = [
     "This week: build a colorful button and share a screenshot!",
@@ -30,13 +17,18 @@ export default function DashboardPage() {
   return (
     <div className="grid gap-8">
       <section className="grid gap-3 rounded-3xl bg-gradient-to-r from-blue-600 to-purple-500 p-8 text-white shadow-lg">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em]">Dashboard</p>
-        <h1 className="text-3xl font-bold">
-          {studentName ? `Welcome back, ${studentName}!` : "Welcome to your dashboard"}
-        </h1>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em]">Dashboard</p>
+            <h1 className="text-3xl font-bold">Welcome back, {user.email}!</h1>
+          </div>
+          <LogoutButton />
+        </div>
+
         <p className="max-w-2xl text-base">
-          Pick a course, read the news, and explore topics that make you curious. Everything stays in your browser.
+          Pick a course, read the news, and explore topics that make you curious.
         </p>
+
         <div className="flex flex-wrap gap-3">
           <Link
             href="/courses"
@@ -48,12 +40,11 @@ export default function DashboardPage() {
       </section>
 
       <section className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">School news</p>
-            <h2 className="text-xl font-bold text-slate-900">Quick updates</h2>
-          </div>
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">School news</p>
+          <h2 className="text-xl font-bold text-slate-900">Quick updates</h2>
         </div>
+
         <ul className="grid gap-3">
           {newsItems.map((item) => (
             <li
@@ -76,6 +67,7 @@ export default function DashboardPage() {
             See all
           </Link>
         </div>
+
         <div className="grid gap-4 md:grid-cols-2">
           {courses.map((course) => (
             <article
@@ -91,6 +83,7 @@ export default function DashboardPage() {
                   {course.topics.length} topics
                 </span>
               </div>
+
               <div className="flex flex-wrap gap-2 text-xs text-slate-700">
                 {course.topics.slice(0, 2).map((topic) => (
                   <span key={topic} className="rounded-full bg-white px-3 py-1 font-semibold">
@@ -98,6 +91,7 @@ export default function DashboardPage() {
                   </span>
                 ))}
               </div>
+
               <Link
                 href={`/courses/${course.id}`}
                 className="w-fit rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-blue-700"
