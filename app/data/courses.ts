@@ -1,72 +1,59 @@
-// Simple mock data for the LMS. Keeping it here avoids setting up a real database.
-export type Lesson = {
-  id: string;
-  title: string;
-  content: string;
-  homework: string;
-};
-
+// In-memory course data for the kid-friendly LMS.
+// Each course lists fun topics instead of deep lessons to keep things light.
 export type Course = {
   id: string;
   title: string;
   description: string;
-  lessons: Lesson[];
+  topics: string[];
 };
 
 export const courses: Course[] = [
   {
-    id: "web-basics",
-    title: "Web Basics",
-    description: "Learn what web pages are made of and how they show up on screen.",
-    lessons: [
-      {
-        id: "html-intro",
-        title: "HTML Building Blocks",
-        content:
-          "HTML is the skeleton of every web page. It uses tags like <p> for paragraphs and <h1> for big titles.",
-        homework:
-          "Write down three HTML tags you know and describe when you would use each one. Example: <img> is for images.",
-      },
-      {
-        id: "css-colors",
-        title: "Colorful CSS",
-        content:
-          "CSS is the paint and outfit of a site. You can change colors, sizes, and layouts to make pages feel friendly.",
-        homework:
-          "Pick your favorite color and explain how you would apply it to the background of a page using CSS.",
-      },
+    id: "frontend",
+    title: "Friendly Frontend",
+    description: "Explore HTML, CSS, and simple JavaScript that shape every web page.",
+    topics: [
+      "How HTML builds the page skeleton",
+      "Painting with CSS colors and fonts",
+      "Adding simple buttons and click actions",
+      "Building a mini page layout",
     ],
   },
   {
-    id: "coding-logic",
-    title: "Coding Logic",
-    description: "Practice thinking like a developer with small JavaScript ideas.",
-    lessons: [
-      {
-        id: "variables",
-        title: "Variables as Boxes",
-        content:
-          "Variables are boxes that hold information. You label the box with a name so you can find the info later.",
-        homework:
-          "Describe two things you would store in variables while making a simple click counter page.",
-      },
-      {
-        id: "if-statements",
-        title: "If Statements",
-        content:
-          "If statements let a program make choices. They read like: if something is true, then do this.",
-        homework:
-          "Write a short idea for an if statement that reminds a player to take a break after 3 games.",
-      },
+    id: "roblox",
+    title: "Roblox Studio Basics",
+    description: "Learn how creators build worlds, scripts, and gameplay in Roblox Studio.",
+    topics: [
+      "Using the Explorer and Properties panels",
+      "Placing parts to design an obby",
+      "Scripting with Lua events",
+      "Testing and publishing your place",
+    ],
+  },
+  {
+    id: "minecraft",
+    title: "Minecraft Makers",
+    description: "Create maps and command tricks that make Minecraft adventures unique.",
+    topics: [
+      "Creative mode building tips",
+      "Redstone basics for machines",
+      "Simple command blocks",
+      "Making a mini adventure map",
+    ],
+  },
+  {
+    id: "java",
+    title: "Java Journeys",
+    description: "Meet the Java language and write tiny programs that react to input.",
+    topics: [
+      "Printing friendly messages",
+      "Variables and data types",
+      "If/else choices",
+      "Loops that repeat helpful steps",
     ],
   },
 ];
 
 export function findCourse(courseId: string) {
   return courses.find((course) => course.id === courseId);
-}
-
-export function findLesson(courseId: string, lessonId: string) {
-  const course = findCourse(courseId);
-  return course?.lessons.find((lesson) => lesson.id === lessonId);
 }

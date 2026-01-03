@@ -9,7 +9,7 @@ export default function CoursesPage() {
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">Courses</p>
         <h1 className="text-3xl font-bold text-slate-900">Pick a track to get started</h1>
         <p className="text-slate-700">
-          Each course holds a few short lessons. Open one to read the story and submit homework.
+          Each course lists quick topics. Open one to read what you will explore.
         </p>
       </div>
       <div className="grid gap-4 md:grid-cols-2">
