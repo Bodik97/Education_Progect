@@ -1,20 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-
-const STORAGE_KEY = "lms-student-name";
+import { useSyncExternalStore } from "react";
+import { useRouter } from "next/navigation";
+import {
+  clearStudentSession,
+  getStoredStudentSession,
+  subscribeToAuthChanges,
+} from "../utils/auth";
 
 // Simple header with navigation and a friendly greeting when the student is logged in.
 export function Header() {
-  const [name, setName] = useState<string | null>(() => {
-    if (typeof window === "undefined") return null;
-    return localStorage.getItem(STORAGE_KEY);
-  });
+  const router = useRouter();
+  const session = useSyncExternalStore(subscribeToAuthChanges, getStoredStudentSession, () => null);
 
   function handleSignOut() {
-    localStorage.removeItem(STORAGE_KEY);
-    setName(null);
+    clearStudentSession();
+    router.replace("/");
   }
 
   return (
@@ -38,11 +40,11 @@ export function Header() {
       <div className="border-t border-slate-200 bg-slate-50/60">
         <div className="mx-auto flex w-full max-w-5xl flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-slate-700">
-            This LMS keeps data in your browser only. Log in with your name to unlock the dashboard.
+            This LMS keeps data in your browser only. Log in with your name and password to unlock the dashboard.
           </p>
-          {name ? (
+          {session ? (
             <div className="flex items-center gap-3 text-sm font-semibold text-slate-800">
-              <span>Hello, {name}!</span>
+              <span>Hello, {session.name}!</span>
               <button
                 onClick={handleSignOut}
                 className="rounded-lg border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-700 transition hover:bg-slate-100"

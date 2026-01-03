@@ -1,42 +1,59 @@
-export type Lesson = {
-  id: string;
-  title: string;
-  content: string;
-  homework: string;
-};
-
+// In-memory course data for the kid-friendly LMS.
+// Each course lists fun topics instead of deep lessons to keep things light.
 export type Course = {
   id: string;
   title: string;
   description: string;
   topics: string[];
-  lessons: Lesson[];
 };
 
 export const courses: Course[] = [
   {
     id: "frontend",
-    title: "Frontend",
-    description: "HTML, CSS, JavaScript",
-    topics: ["HTML basics", "CSS basics", "JS basics"],
-    lessons: [
-      {
-        id: "lesson-1",
-        title: "HTML: tags",
-        content: "Today we learn basic tags: h1, p, img, a...",
-        homework: "Create a simple page with title + 3 paragraphs.",
-      },
+    title: "Friendly Frontend",
+    description: "Explore HTML, CSS, and simple JavaScript that shape every web page.",
+    topics: [
+      "How HTML builds the page skeleton",
+      "Painting with CSS colors and fonts",
+      "Adding simple buttons and click actions",
+      "Building a mini page layout",
     ],
   },
-  // roblox / minecraft / java ...
+  {
+    id: "roblox",
+    title: "Roblox Studio Basics",
+    description: "Learn how creators build worlds, scripts, and gameplay in Roblox Studio.",
+    topics: [
+      "Using the Explorer and Properties panels",
+      "Placing parts to design an obby",
+      "Scripting with Lua events",
+      "Testing and publishing your place",
+    ],
+  },
+  {
+    id: "minecraft",
+    title: "Minecraft Makers",
+    description: "Create maps and command tricks that make Minecraft adventures unique.",
+    topics: [
+      "Creative mode building tips",
+      "Redstone basics for machines",
+      "Simple command blocks",
+      "Making a mini adventure map",
+    ],
+  },
+  {
+    id: "java",
+    title: "Java Journeys",
+    description: "Meet the Java language and write tiny programs that react to input.",
+    topics: [
+      "Printing friendly messages",
+      "Variables and data types",
+      "If/else choices",
+      "Loops that repeat helpful steps",
+    ],
+  },
 ];
 
 export function findCourse(courseId: string) {
-  return courses.find((c) => c.id === courseId);
-}
-
-export function findLesson(courseId: string, lessonId: string) {
-  const course = findCourse(courseId);
-  if (!course) return null;
-  return course.lessons.find((l) => l.id === lessonId) ?? null;
+  return courses.find((course) => course.id === courseId);
 }

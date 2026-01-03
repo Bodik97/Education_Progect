@@ -1,8 +1,30 @@
+"use client";
+
+import { useEffect, useSyncExternalStore } from "react";
+import { useRouter } from "next/navigation";
 import { CourseCard } from "../components/CourseCard";
 import { courses } from "../data/courses";
+import { getStoredStudentSession, subscribeToAuthChanges } from "../utils/auth";
 
 // Courses list page. Great place for kids to browse topics.
 export default function CoursesPage() {
+  const router = useRouter();
+  const session = useSyncExternalStore(subscribeToAuthChanges, getStoredStudentSession, () => null);
+
+  useEffect(() => {
+    if (!session) {
+      router.replace("/");
+    }
+  }, [router, session]);
+
+  if (!session) {
+    return (
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-700">
+        Checking login...
+      </div>
+    );
+  }
+
   return (
     <div className="grid gap-6">
       <div className="space-y-2">

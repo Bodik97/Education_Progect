@@ -1,9 +1,31 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useSyncExternalStore } from "react";
+import { useRouter } from "next/navigation";
 import { findCourse } from "../../data/courses";
+import { getStoredStudentSession, subscribeToAuthChanges } from "../../utils/auth";
 
 // Dynamic route for each course.
 export default function CourseDetail({ params }: { params: { courseId: string } }) {
+  const router = useRouter();
+  const session = useSyncExternalStore(subscribeToAuthChanges, getStoredStudentSession, () => null);
+
+  useEffect(() => {
+    if (!session) {
+      router.replace("/");
+    }
+  }, [router, session]);
+
   const course = findCourse(params.courseId);
+
+  if (!session) {
+    return (
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-700">
+        Checking login...
+      </div>
+    );
+  }
 
   if (!course) {
     return (
