@@ -8,20 +8,39 @@ export type StudentSession = {
 
 export const STORAGE_KEY = "lms-student-session";
 
-// Read the saved student session (if any) from localStorage.
+// Cache the latest snapshot so useSyncExternalStore receives a stable reference
+// and avoids an infinite update loop. The cache only refreshes when the raw
+// storage value actually changes.
+let cachedRaw: string | null = null;
+let cachedSession: StudentSession | null = null;
+
+// Read the saved student session (if any) from localStorage and keep a stable
+// reference unless the stored string changes. This keeps getSnapshot pure for
+// useSyncExternalStore.
 export function getStoredStudentSession(): StudentSession | null {
-  if (typeof window === "undefined") return null;
+  if (typeof window === "undefined") return cachedSession;
+
   const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) return null;
+  if (raw === cachedRaw) return cachedSession;
+
+  cachedRaw = raw;
+
+  if (!raw) {
+    cachedSession = null;
+    return null;
+  }
 
   try {
     const parsed = JSON.parse(raw) as StudentSession;
     // Basic shape validation to guard against corrupted data.
     if (parsed?.name && parsed?.password) {
-      return parsed;
+      cachedSession = parsed;
+      return cachedSession;
     }
+    cachedSession = null;
     return null;
   } catch {
+    cachedSession = null;
     return null;
   }
 }
@@ -33,13 +52,18 @@ export function saveStudentSession(name: string, password: string) {
     name: name.trim(),
     password: password.trim(),
   };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+  const raw = JSON.stringify(session);
+  cachedSession = session;
+  cachedRaw = raw;
+  localStorage.setItem(STORAGE_KEY, raw);
   notifyAuthChange();
 }
 
 // Remove the saved student session.
 export function clearStudentSession() {
   if (typeof window === "undefined") return;
+  cachedSession = null;
+  cachedRaw = null;
   localStorage.removeItem(STORAGE_KEY);
   notifyAuthChange();
 }
