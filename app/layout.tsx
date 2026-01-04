@@ -3,7 +3,7 @@ import "./globals.css";
 import { Header } from "./components/Header";
 
 export const metadata: Metadata = {
-  title: "BrightPath LMS",
+  title: "EduPlatform LMS",
   description: "A simple learning space for kids to explore coding basics.",
 };
 
