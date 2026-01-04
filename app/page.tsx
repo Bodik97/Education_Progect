@@ -3,17 +3,13 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  getStoredStudentSession,
-  saveStudentSession,
-  verifyStudentSession,
-} from "./utils/auth";
+import { attemptLogin, getStoredStudentAccount } from "./utils/auth";
 
-// Landing page acts as a combined login/registration step.
-// Students must enter a name/email and password. Without valid data, access is blocked.
+// Landing page acts strictly as the login gate.
+// Students must provide a confirmed account (approved by an admin) before accessing the LMS.
 export default function Home() {
   const router = useRouter();
-  const [studentName, setStudentName] = useState(() => getStoredStudentSession()?.name ?? "");
+  const [studentName, setStudentName] = useState(() => getStoredStudentAccount()?.name ?? "");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -25,25 +21,16 @@ export default function Home() {
     const trimmedPassword = password.trim();
 
     if (!trimmedName || !trimmedPassword) {
-      setError("Будь ласка, введіть ім’я та пароль, щоб увійти.");
+      setError("Будь ласка, введіть ім’я/емейл та пароль.");
       return;
     }
 
-    // Login only works if a student has registered already.
-    const existingSession = getStoredStudentSession();
-    if (!existingSession) {
-      setError("Немає зареєстрованого учня. Спершу створіть акаунт на сторінці реєстрації.");
+    const result = attemptLogin(trimmedName, trimmedPassword);
+    if (!result.success) {
+      setError(result.error ?? "Вхід заборонено. Перевірте дані.");
       return;
     }
 
-    const isValid = verifyStudentSession(trimmedName, trimmedPassword);
-    if (!isValid) {
-      setError("Дані не збігаються з поточним користувачем. Спробуйте ще раз.");
-      return;
-    }
-
-    // If credentials match, let the student continue to the dashboard.
-    saveStudentSession(trimmedName, trimmedPassword);
     router.push("/dashboard");
   }
 
@@ -53,17 +40,17 @@ export default function Home() {
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">Welcome</p>
         <h1 className="text-3xl font-bold text-slate-900">Login to LMS</h1>
         <p className="text-base text-slate-700">
-          Це навчальна платформа. Спочатку увійдіть за іменем та паролем. Дані зберігаються тільки у вашому браузері.
+          Спершу увійдіть за своїм логіном та паролем. Доступ відкриється лише після підтвердження адміністратором.
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="grid gap-4 rounded-2xl border border-slate-200 bg-slate-50/60 p-6">
         <label className="grid gap-2 text-sm font-semibold text-slate-800">
-          Student name or email
+          Student email or name
           <input
             value={studentName}
             onChange={(event) => setStudentName(event.target.value)}
-            placeholder="SkyCoder or sky@example.com"
+            placeholder="kid@example.com"
             className="rounded-lg border border-slate-300 px-4 py-3 text-base text-slate-900 shadow-sm focus:border-blue-500 focus:outline-none"
           />
         </label>
@@ -74,7 +61,7 @@ export default function Home() {
             type="password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            placeholder="Enter a simple password"
+            placeholder="Enter your password"
             className="rounded-lg border border-slate-300 px-4 py-3 text-base text-slate-900 shadow-sm focus:border-blue-500 focus:outline-none"
           />
         </label>
@@ -89,11 +76,11 @@ export default function Home() {
         >
           Enter dashboard
         </button>
-        <p className="text-xs text-slate-600">Пароль обов’язковий. Без перевірки доступ заборонений.</p>
+        <p className="text-xs text-slate-600">Пароль обов’язковий. Поки акаунт не підтверджено, вхід заборонений.</p>
         <p className="text-sm text-slate-700">
           Ще не зареєстровані?{" "}
           <Link href="/register" className="font-semibold text-blue-700 hover:underline">
-            Створіть новий акаунт
+            Створіть акаунт
           </Link>
           .
         </p>

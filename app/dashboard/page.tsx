@@ -4,20 +4,20 @@ import Link from "next/link";
 import { useEffect, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { courses } from "../data/courses";
-import { getStoredStudentSession, subscribeToAuthChanges } from "../utils/auth";
+import { getActiveStudentSession, subscribeToAuthChanges } from "../utils/auth";
 
-// Dashboard only shows after the student logs in.
+// Dashboard only shows after the student logs in with a confirmed account.
 export default function DashboardPage() {
   const router = useRouter();
-  const session = useSyncExternalStore(subscribeToAuthChanges, getStoredStudentSession, () => null);
+  const session = useSyncExternalStore(subscribeToAuthChanges, getActiveStudentSession, () => null);
 
   useEffect(() => {
-    if (!session) {
+    if (!session || session.status !== "confirmed") {
       router.replace("/");
     }
   }, [router, session]);
 
-  if (!session) {
+  if (!session || session.status !== "confirmed") {
     // Avoid flashing dashboard content while checking login state.
     return (
       <div className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-700">
@@ -36,9 +36,7 @@ export default function DashboardPage() {
     <div className="grid gap-8">
       <section className="grid gap-3 rounded-3xl bg-gradient-to-r from-blue-600 to-purple-500 p-8 text-white shadow-lg">
         <p className="text-sm font-semibold uppercase tracking-[0.2em]">Dashboard</p>
-        <h1 className="text-3xl font-bold">
-          {`Welcome back, ${session.name}!`}
-        </h1>
+        <h1 className="text-3xl font-bold">{`Welcome back, ${session.name}!`}</h1>
         <p className="max-w-2xl text-base">
           Pick a course, read the news, and explore topics that make you curious. Everything stays in your browser.
         </p>
@@ -83,10 +81,7 @@ export default function DashboardPage() {
         </div>
         <div className="grid gap-4 md:grid-cols-2">
           {courses.map((course) => (
-            <article
-              key={course.id}
-              className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4"
-            >
+            <article key={course.id} className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
               <div className="flex items-center justify-between gap-2">
                 <div className="space-y-1">
                   <h3 className="text-lg font-semibold text-slate-900">{course.title}</h3>
