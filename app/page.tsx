@@ -54,7 +54,7 @@ export default function Home() {
     <div className="grid gap-8 rounded-3xl bg-white/90 p-8 shadow-lg ring-1 ring-slate-200">
       <div className="space-y-3">
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">Welcome</p>
-        <h1 className="text-3xl font-bold text-slate-900">Login to LMS</h1>
+        <h1 className="text-3xl font-bold text-slate-900">Login to EduPlatform</h1>
         <p className="text-base text-slate-700">
           Спершу увійдіть за своїм логіном та паролем. Доступ відкриється лише після підтвердження адміністратором.
         </p>

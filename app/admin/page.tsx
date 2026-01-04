@@ -60,7 +60,7 @@ export default function AdminPage() {
     <div className="grid gap-6 rounded-3xl bg-white/90 p-8 shadow-lg ring-1 ring-slate-200">
       <div className="space-y-2">
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">Admin</p>
-        <h1 className="text-3xl font-bold text-slate-900">Review new students</h1>
+        <h1 className="text-3xl font-bold text-slate-900">Review  students</h1>
         <p className="text-slate-700">
           Ця сторінка звертається до безкоштовної бази (Vercel KV). Тут можна підтвердити або відхилити зареєстрованих учнів.
         </p>

@@ -60,7 +60,7 @@ export default function RegisterPage() {
     <div className="grid gap-8 rounded-3xl bg-white/90 p-8 shadow-lg ring-1 ring-slate-200">
       <div className="space-y-3">
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">Create account</p>
-        <h1 className="text-3xl font-bold text-slate-900">Registration</h1>
+        <h1 className="text-3xl font-bold text-slate-900">Registration to EduPlatform</h1>
         <p className="text-base text-slate-700">
           Заповніть дані учня, придумайте простий пароль і відправте заявку. Спочатку статус буде «Очікує перевірки».
         </p>
