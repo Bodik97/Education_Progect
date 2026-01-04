@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import { randomUUID } from "crypto";
 import { readSessions, readUsers, writeSessions, writeUsers, type User } from "./store";
 
-const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7; // 7 днів
+const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
 
 export const SESSION_COOKIE = "lms_session";
 
@@ -43,7 +43,6 @@ export async function loginUser(email: string, password: string): Promise<User> 
 
 export async function createSession(userId: string) {
   const sessions = await readSessions();
-
   const token = randomUUID();
   const expiresAt = Date.now() + SESSION_TTL_MS;
 

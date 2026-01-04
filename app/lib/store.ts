@@ -11,7 +11,7 @@ export type User = {
 export type Session = {
   token: string;
   userId: string;
-  expiresAt: number; // unix ms
+  expiresAt: number;
 };
 
 const dataDir = path.join(process.cwd(), ".data");
@@ -21,8 +21,17 @@ const sessionsPath = path.join(dataDir, "sessions.json");
 async function ensureFiles() {
   await fs.mkdir(dataDir, { recursive: true });
 
-  try { await fs.access(usersPath); } catch { await fs.writeFile(usersPath, "[]", "utf8"); }
-  try { await fs.access(sessionsPath); } catch { await fs.writeFile(sessionsPath, "[]", "utf8"); }
+  try {
+    await fs.access(usersPath);
+  } catch {
+    await fs.writeFile(usersPath, "[]", "utf8");
+  }
+
+  try {
+    await fs.access(sessionsPath);
+  } catch {
+    await fs.writeFile(sessionsPath, "[]", "utf8");
+  }
 }
 
 export async function readUsers(): Promise<User[]> {
