@@ -3,17 +3,18 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { attemptLogin, getStoredStudentAccount } from "./utils/auth";
+import { saveStudentSession } from "./utils/auth";
 
 // Landing page acts strictly as the login gate.
-// Students must provide a confirmed account (approved by an admin) before accessing the LMS.
+// Students must provide confirmed credentials stored in the database.
 export default function Home() {
   const router = useRouter();
-  const [studentName, setStudentName] = useState(() => getStoredStudentAccount()?.name ?? "");
+  const [studentName, setStudentName] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
 
@@ -25,13 +26,28 @@ export default function Home() {
       return;
     }
 
-    const result = attemptLogin(trimmedName, trimmedPassword);
-    if (!result.success) {
-      setError(result.error ?? "Вхід заборонено. Перевірте дані.");
-      return;
-    }
+    setLoading(true);
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: trimmedName, password: trimmedPassword }),
+      });
 
-    router.push("/dashboard");
+      const data = await response.json();
+      if (!response.ok) {
+        setError(data?.error ?? "Вхід заборонено. Перевірте дані.");
+        return;
+      }
+
+      saveStudentSession(data.student.email, data.student.status);
+      router.push("/dashboard");
+    } catch (err) {
+      console.error(err);
+      setError("Не вдалося підключитися до бази. Спробуйте ще раз.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -72,9 +88,10 @@ export default function Home() {
 
         <button
           type="submit"
-          className="w-fit rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
+          disabled={loading}
+          className="w-fit rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:opacity-60"
         >
-          Enter dashboard
+          {loading ? "Connecting..." : "Enter dashboard"}
         </button>
         <p className="text-xs text-slate-600">Пароль обов’язковий. Поки акаунт не підтверджено, вхід заборонений.</p>
         <p className="text-sm text-slate-700">

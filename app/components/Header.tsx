@@ -46,7 +46,7 @@ export function Header() {
       <div className="border-t border-slate-200 bg-slate-50/60">
         <div className="mx-auto flex w-full max-w-5xl flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-slate-700">
-            This LMS keeps data in your browser only. Login appears first; access stays blocked until an admin confirms.
+            Login appears first, data stores in a free KV database when configured, and access stays blocked until an admin confirms.
           </p>
           {session ? (
             <div className="flex items-center gap-3 text-sm font-semibold text-slate-800">

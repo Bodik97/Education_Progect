@@ -2,18 +2,17 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { saveStudentAccount } from "../utils/auth";
 
-// Registration page to create a simple mock student account.
-// Data is stored in localStorage and awaits admin review before login is allowed.
+// Registration page to create a student account in the free KV database.
 export default function RegisterPage() {
   const [studentName, setStudentName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
     setSuccess(null);
@@ -32,12 +31,29 @@ export default function RegisterPage() {
       return;
     }
 
-    // Save the new account as pending; login stays blocked until admin approval.
-    saveStudentAccount(trimmedName, trimmedPassword);
-    setSuccess("Дякуємо! Ваш акаунт створено зі статусом «Очікує перевірки». Чекайте підтвердження від адміністратора.");
-    setStudentName("");
-    setPassword("");
-    setConfirmPassword("");
+    setLoading(true);
+    try {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: trimmedName, password: trimmedPassword }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        setError(data?.error ?? "Не вдалося зберегти акаунт.");
+        return;
+      }
+
+      setSuccess(data?.message ?? "Дані збережені. Чекайте на підтвердження адміністратора.");
+      setStudentName("");
+      setPassword("");
+      setConfirmPassword("");
+    } catch (err) {
+      console.error(err);
+      setError("Не вдалося підключитися до бази. Спробуйте ще раз.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -93,9 +109,10 @@ export default function RegisterPage() {
 
         <button
           type="submit"
-          className="w-fit rounded-lg bg-green-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-green-700"
+          disabled={loading}
+          className="w-fit rounded-lg bg-green-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-green-700 disabled:opacity-60"
         >
-          Зареєструватися
+          {loading ? "Saving..." : "Зареєструватися"}
         </button>
         <p className="text-sm text-slate-700">
           Уже є підтверджений акаунт?{" "}
