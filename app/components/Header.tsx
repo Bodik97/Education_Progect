@@ -29,6 +29,9 @@ export function Header() {
           <Link className="hover:text-blue-700" href="/">
             Login
           </Link>
+          <Link className="hover:text-blue-700" href="/register">
+            Register
+          </Link>
           <Link className="hover:text-blue-700" href="/dashboard">
             Dashboard
           </Link>
