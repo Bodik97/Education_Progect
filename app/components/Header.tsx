@@ -23,7 +23,7 @@ export function Header() {
     <header className="flex flex-col gap-4 bg-white/90 shadow-sm backdrop-blur-sm">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 px-4 py-5 sm:flex-row sm:items-center sm:justify-between">
         <Link href="/" className="text-2xl font-bold text-blue-700">
-          BrightPath LMS
+          EduPlatform
         </Link>
         <nav className="flex items-center gap-4 text-sm font-semibold text-slate-700">
           <Link className="hover:text-blue-700" href="/">
